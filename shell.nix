@@ -1,9 +1,13 @@
 # shell.nix
-
+{
+  nixpkgs ? fetchTarball "https://github.com/NixOS/nixpkgs/archive/a6292e34000dc93d43bccf78338770c1c5ec8a99.tar.gz",
+}:
 let
-  pkgs = import <nixpkgs> {};
-  cross = import <nixpkgs> {
-    crossSystem = { config = "aarch64-linux-gnu"; };
+  pkgs = import nixpkgs { };
+  cross = import nixpkgs {
+    crossSystem = {
+      config = "aarch64-linux-gnu";
+    };
   };
 
   python = pkgs.python3.override {
@@ -16,13 +20,21 @@ let
   };
 
   my-uefi36-3-gcc-tools = pkgs.linkFarm "uefi36-3-gcc-tools" [
-    { name = "bin/aarch64-linux-gnu-gcc-ar"; path = "${cross.buildPackages.libgcc}/bin/aarch64-linux-gnu-gcc-ar"; }
-    { name = "bin/aarch64-linux-gnu-gcc"; path = "${cross.buildPackages.gcc12}/bin/aarch64-linux-gnu-gcc"; }
-    { name = "bin/aarch64-linux-gnu-objcopy"; path = "${cross.buildPackages.gcc12}/bin/aarch64-linux-gnu-objcopy"; }
+    {
+      name = "bin/aarch64-linux-gnu-gcc-ar";
+      path = "${cross.buildPackages.libgcc}/bin/aarch64-linux-gnu-gcc-ar";
+    }
+    {
+      name = "bin/aarch64-linux-gnu-gcc";
+      path = "${cross.buildPackages.gcc12}/bin/aarch64-linux-gnu-gcc";
+    }
+    {
+      name = "bin/aarch64-linux-gnu-objcopy";
+      path = "${cross.buildPackages.gcc12}/bin/aarch64-linux-gnu-objcopy";
+    }
   ];
-
-in pkgs.mkShell {
-
+in
+pkgs.mkShell {
   packages = [
     pkgs.nuget
     pkgs.mono
@@ -42,4 +54,3 @@ in pkgs.mkShell {
     ]))
   ];
 }
-
