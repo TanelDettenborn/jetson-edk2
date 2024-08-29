@@ -38,6 +38,12 @@ pkgs.mkShell rec {
   depsHostHost = [ pkgs.libuuid ];
   inherit CROSS_COMPILER_PREFIX;
   ${"GCC5_${targetArch}_PREFIX"} = CROSS_COMPILER_PREFIX;
+
+  shellHook = ''
+    CC="${buildPackages.stdenv.cc.targetPrefix}cc";
+    LD="${buildPackages.stdenv.cc.targetPrefix}ld";
+    AR="${buildPackages.stdenv.cc.targetPrefix}ar";
+  '';
   strictDeps = true;
   NUGET_PATH = pkgs.lib.getExe buildPackages.nuget;
   nativeBuildInputs = [
