@@ -14,11 +14,31 @@ let
     ps.regex
     ps.kconfiglib
   ]);
-in
-pkgs.mkShell {
-  depsBuildBuild = [
 
+  targetArch =
+    if pkgs.stdenv.isi686 then
+      "IA32"
+    else if pkgs.stdenv.isx86_64 then
+      "X64"
+    else if pkgs.stdenv.isAarch32 then
+      "ARM"
+    else if pkgs.stdenv.isAarch64 then
+      "AARCH64"
+    else if pkgs.stdenv.hostPlatform.isRiscV64 then
+      "RISCV64"
+    else
+      throw "Unsupported architecture";
+  CROSS_COMPILER_PREFIX = "${pkgs.stdenv.cc}/bin/${pkgs.stdenv.cc.targetPrefix}";
+in
+pkgs.mkShell rec {
+  depsBuildBuild = [
+    buildPackages.stdenv.cc
+    buildPackages.bash
   ];
+  depsHostHost = [ pkgs.libuuid ];
+  inherit CROSS_COMPILER_PREFIX;
+  ${"GCC5_${targetArch}_PREFIX"} = CROSS_COMPILER_PREFIX;
+  strictDeps = true;
   NUGET_PATH = pkgs.lib.getExe buildPackages.nuget;
   nativeBuildInputs = [
     buildPackages.libuuid
