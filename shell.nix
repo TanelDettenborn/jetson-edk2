@@ -41,6 +41,7 @@ pkgs.mkShell rec {
     buildPackages.libuuid
     buildPackages.dtc
     buildPackages.acpica-tools
+    buildPackages.gnat
     python
     # FIXME: needs cross fix
     #pkgs.buildPackages.lcov
